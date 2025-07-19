@@ -1,26 +1,36 @@
 FROM debian:bookworm-slim
 
-# Install dependencies and Mosquitto (from Debian repo)
+# Install Mosquitto with WebSockets support
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        mosquitto \
-        mosquitto-clients \
+        wget \
+        ca-certificates && \
+    # Download Mosquitto directly from the official releases
+    wget https://mosquitto.org/files/source/mosquitto-2.0.18.tar.gz -O /tmp/mosquitto.tar.gz && \
+    tar xzf /tmp/mosquitto.tar.gz -C /tmp && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        libc-ares-dev \
+        libssl-dev \
         libwebsockets-dev \
-        ca-certificates \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+        libcjson-dev \
+        uuid-dev && \
+    cd /tmp/mosquitto-2.0.18 && \
+    make -j$(nproc) && \
+    make install && \
+    # Cleanup
+    apt-get remove -y build-essential cmake && \
+    apt-get autoremove -y && \
+    rm -rf /tmp/mosquitto* /var/lib/apt/lists/* && \
+    mkdir -p /mosquitto/config /mosquitto/data /mosquitto/log
 
-# Create Mosquitto data directories
-RUN mkdir -p /mosquitto/config /mosquitto/data /mosquitto/log /mosquitto/certs
-
-# Copy JWT plugin (make sure libmosquitto_jwt_auth.so is in build context)
+# Copy JWT plugin (ensure it's compiled for ARM64)
 COPY libmosquitto_jwt_auth.so /usr/lib/libmosquitto_jwt_auth.so
 
-# Copy Mosquitto configuration
+# Copy config and certs
 COPY mosquitto/mosquitto.conf /mosquitto/config/mosquitto.conf
-
-# Copy certs (ensure 'certs' folder in build context)
 COPY certs /mosquitto/certs
 
-# Set entrypoint
+# Run Mosquitto
 CMD ["mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
