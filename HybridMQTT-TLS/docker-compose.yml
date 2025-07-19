@@ -5,7 +5,7 @@ services:
     build: .
     container_name: mosquitto-jwt
     ports:
-      - "8883:8883"  # mTLS (MQTT)
+      - "8888:8888"  # mTLS (MQTT)
       - "8884:8884"  # JWT (WebSockets)
     volumes:
       - ./certs:/mosquitto/certs  # TLS certs
