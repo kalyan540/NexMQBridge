@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  mosquitto:
+    build: .
+    container_name: mosquitto-jwt
+    ports:
+      - "8883:8883"  # mTLS (MQTT)
+      - "8884:8884"  # JWT (WebSockets)
+    volumes:
+      - ./certs:/mosquitto/certs  # TLS certs
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    restart: unless-stopped
