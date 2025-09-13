@@ -14,6 +14,8 @@ Thumbs.db
 
 # Ignore node_modules (if applicable)
 node_modules/
+HybridMQTT-JWT\certs
+HybridMQTT-TLS\certs
 
 # Ignore build artifacts
 dist/
