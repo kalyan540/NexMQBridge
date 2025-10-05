@@ -4,7 +4,8 @@ FROM debian:bookworm-slim
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         wget \
-        ca-certificates && \
+        ca-certificates \
+        gettext-base && \
     # Download Mosquitto directly from the official releases
     wget https://mosquitto.org/files/source/mosquitto-2.0.18.tar.gz -O /tmp/mosquitto.tar.gz && \
     tar xzf /tmp/mosquitto.tar.gz -C /tmp && \
@@ -26,11 +27,15 @@ RUN apt-get update && \
     mkdir -p /mosquitto/config /mosquitto/data /mosquitto/log
 
 # Copy JWT plugin (ensure it's compiled for ARM64)
-COPY libmosquitto_jwt_auth.so /usr/lib/libmosquitto_jwt_auth.so
+COPY plugin/libmosquitto_jwt_auth.so /usr/lib/libmosquitto_jwt_auth.so
 
-# Copy config and certs
+# Copy config, certs, and startup script
 COPY mosquitto/mosquitto.conf /mosquitto/config/mosquitto.conf
 COPY certs /mosquitto/certs
+COPY start.sh /start.sh
 
-# Run Mosquitto
-CMD ["mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
+# Make startup script executable
+RUN chmod +x /start.sh
+
+# Run Mosquitto with startup script
+CMD ["/start.sh"]

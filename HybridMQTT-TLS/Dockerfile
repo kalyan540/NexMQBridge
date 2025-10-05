@@ -26,7 +26,7 @@ RUN apt-get update && \
     mkdir -p /mosquitto/config /mosquitto/data /mosquitto/log
 
 # Copy JWT plugin (ensure it's compiled for ARM64)
-COPY libmosquitto_jwt_auth.so /usr/lib/libmosquitto_jwt_auth.so
+# COPY libmosquitto_jwt_auth.so /usr/lib/libmosquitto_jwt_auth.so
 
 # Copy config and certs
 COPY mosquitto/mosquitto.conf /mosquitto/config/mosquitto.conf

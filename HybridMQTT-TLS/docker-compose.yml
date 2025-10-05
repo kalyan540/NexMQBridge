@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mosquitto:
     build: .
-    container_name: mosquitto-jwt2
+    container_name: mosquitto-tls
     ports:
       - "1884:1884"  # mTLS (MQTT)
       - "8883:8883"  # JWT (WebSockets)

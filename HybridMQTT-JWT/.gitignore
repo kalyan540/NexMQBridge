@@ -1,2 +1,4 @@
 certs/
 plugins/
+*.sh
+.env
